@@ -1,35 +1,62 @@
-const searchBtn = document.getElementById('search-btn');
-const wordInput = document.getElementById('word-input');
-const wordTitle = document.getElementById('word-title');
-const wordType = document.getElementById('word-type');
-const definition = document.getElementById('definition');
-const pronunciation = document.getElementById('pronunciation');
-const continentInfo = document.getElementById('continent-info');
+const searchBtn = document.getElementById('searchBtn');
+const searchInput = document.getElementById('searchInput');
+const wordTitle = document.getElementById('wordTitle');
+const definitionEl = document.getElementById('definition');
+const examplesEl = document.getElementById('examples');
+const pronunciationEl = document.getElementById('pronunciation');
+const originEl = document.getElementById('origin');
 
-searchBtn.addEventListener('click', async () => {
-  const word = wordInput.value.trim();
-  if(!word) return;
-
-  // Fetch word info from API
+// Using Free Dictionary API
+async function fetchWord(word){
   try {
-    const res = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
-    const data = await res.json();
-    if(data[0]){
-      wordTitle.textContent = data[0].word;
-      wordType.textContent = data[0].meanings[0].partOfSpeech;
-      definition.textContent = data[0].meanings[0].definitions[0].definition;
-      if(data[0].phonetics[0]?.audio){
-        pronunciation.src = data[0].phonetics[0].audio;
-      }
-    } else { wordTitle.textContent = 'Word not found'; }
-  } catch(err) { console.error(err); }
+    const response = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
+    const data = await response.json();
 
-  // Example continent info (demo)
-  const continents = {
-    Africa: "Africa is the 2nd largest continent with rich history and diverse cultures.",
-    Europe: "Europe is known for its historical cities and contributions to art, science, and politics.",
-    Asia: "Asia is the largest continent with diverse languages and cultures.",
-    // add more...
-  };
-  continentInfo.textContent = continents[word] || '';
+    if(data.title && data.title === "No Definitions Found"){
+      wordTitle.textContent = "Word not found";
+      definitionEl.textContent = "";
+      examplesEl.innerHTML = "";
+      pronunciationEl.textContent = "";
+      originEl.textContent = "";
+      return;
+    }
+
+    const wordData = data[0];
+
+    wordTitle.textContent = wordData.word;
+    definitionEl.textContent = wordData.meanings[0].definitions[0].definition || "No definition available";
+
+    // Examples
+    examplesEl.innerHTML = "";
+    if(wordData.meanings[0].definitions[0].example){
+      const li = document.createElement('li');
+      li.textContent = wordData.meanings[0].definitions[0].example;
+      examplesEl.appendChild(li);
+    }
+
+    // Pronunciation
+    pronunciationEl.textContent = wordData.phonetic ? `Pronunciation: ${wordData.phonetic}` : "";
+
+    // Origin
+    originEl.textContent = wordData.origin ? `Origin: ${wordData.origin}` : "";
+
+  } catch(err){
+    console.error(err);
+    wordTitle.textContent = "Error fetching data";
+    definitionEl.textContent = "";
+    examplesEl.innerHTML = "";
+    pronunciationEl.textContent = "";
+    originEl.textContent = "";
+  }
+}
+
+searchBtn.addEventListener('click', () => {
+  const word = searchInput.value.trim();
+  if(word) fetchWord(word);
+});
+
+searchInput.addEventListener('keypress', (e) => {
+  if(e.key === 'Enter'){
+    searchBtn.click();
+  }
 });
