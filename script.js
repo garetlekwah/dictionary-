@@ -1,51 +1,175 @@
-const searchBtn = document.getElementById("search-btn");
-const wordInput = document.getElementById("word-input");
-const resultBox = document.getElementById("result");
-const wordEl = document.getElementById("word");
-const partEl = document.getElementById("partOfSpeech");
-const defEl = document.getElementById("definition");
-const exampleEl = document.getElementById("example");
-const playBtn = document.getElementById("play-sound");
-const themeToggle = document.getElementById("theme-toggle");
+/* Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
 
-let audio;
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: url('https://img.freepik.com/free-photo/bookshelf-books-background_53876-148117.jpg') no-repeat center center fixed;
+  background-size: cover;
+  color: #fff;
+  transition: 0.3s;
+}
 
-// Search function
-searchBtn.addEventListener("click", async () => {
-  const word = wordInput.value.trim();
-  if (!word) return alert("Please enter a word!");
+/* Header */
+header {
+  background: rgba(0,0,0,0.7);
+  padding: 15px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 
-  const res = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
-  const data = await res.json();
+header h1 {
+  font-size: 1.5rem;
+}
 
-  if (data.title) {
-    alert("Word not found!");
-    return;
-  }
+#theme-toggle {
+  background: none;
+  border: none;
+  font-size: 1.3rem;
+  cursor: pointer;
+  color: #fff;
+}
 
-  const info = data[0];
-  wordEl.textContent = info.word;
-  partEl.textContent = info.meanings[0].partOfSpeech;
-  defEl.textContent = info.meanings[0].definitions[0].definition;
-  exampleEl.textContent = info.meanings[0].definitions[0].example || "No example available.";
+/* Search */
+.search-section {
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
+}
 
-  if (info.phonetics[0] && info.phonetics[0].audio) {
-    audio = new Audio(info.phonetics[0].audio);
-    playBtn.style.display = "inline";
-  } else {
-    playBtn.style.display = "none";
-  }
+.search-box {
+  display: flex;
+  gap: 10px;
+}
 
-  resultBox.classList.remove("hidden");
-});
+.search-box input {
+  padding: 12px;
+  font-size: 1rem;
+  border-radius: 8px;
+  border: none;
+  width: 300px;
+}
 
-// Play pronunciation
-playBtn.addEventListener("click", () => {
-  if (audio) audio.play();
-});
+.search-box button {
+  padding: 12px 18px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  background: #ff9800;
+  color: #fff;
+  transition: 0.3s;
+}
 
-// Theme toggle
-themeToggle.addEventListener("click", () => {
-  document.body.classList.toggle("light");
-  themeToggle.textContent = document.body.classList.contains("light") ? "🌞" : "🌙";
-});
+.search-box button:hover {
+  background: #e68900;
+}
+
+/* Main Layout */
+.dictionary-container {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 20px;
+  padding: 20px;
+}
+
+.result-box {
+  background: rgba(0,0,0,0.6);
+  padding: 20px;
+  border-radius: 12px;
+}
+
+.hidden {
+  display: none;
+}
+
+.word-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.word-header h2 {
+  font-size: 2rem;
+  margin-right: 10px;
+}
+
+.word-header button {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: #ff9800;
+}
+
+#meanings {
+  margin-top: 15px;
+}
+
+.meaning {
+  margin-bottom: 15px;
+  padding: 10px;
+  border-left: 4px solid #ff9800;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Sidebar */
+.sidebar {
+  background: rgba(0,0,0,0.6);
+  padding: 15px;
+  border-radius: 12px;
+}
+
+.sidebar h3 {
+  margin-bottom: 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.3);
+}
+
+.sidebar ul {
+  list-style: none;
+}
+
+.sidebar ul li {
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.sidebar ul li:hover {
+  color: #ff9800;
+}
+
+/* Footer */
+footer {
+  background: rgba(0,0,0,0.7);
+  text-align: center;
+  padding: 10px;
+  font-size: 0.9rem;
+}
+
+/* Light Theme */
+body.light {
+  background: url('https://img.freepik.com/free-photo/stack-books-library-blurred-background_1232-3102.jpg') no-repeat center center fixed;
+  background-size: cover;
+  color: #000;
+}
+
+body.light header, body.light footer, body.light .sidebar, body.light .result-box {
+  background: rgba(255,255,255,0.8);
+  color: #000;
+}
+
+body.light #theme-toggle {
+  color: #000;
+}
+
+body.light .meaning {
+  background: rgba(0,0,0,0.05);
+}
