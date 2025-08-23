@@ -13,18 +13,37 @@
   </header>
 
   <main>
-    <div class="search-box">
-      <input type="text" id="word-input" placeholder="Enter a word...">
-      <button id="search-btn">🔍</button>
-    </div>
+    <section class="search-section">
+      <div class="search-box">
+        <input type="text" id="word-input" placeholder="Enter a word...">
+        <button id="search-btn">🔍</button>
+      </div>
+    </section>
 
-    <div id="result" class="result-box hidden">
-      <h2 id="word"></h2>
-      <button id="play-sound">🔊</button>
-      <p><strong>Part of Speech:</strong> <span id="partOfSpeech"></span></p>
-      <p><strong>Definition:</strong> <span id="definition"></span></p>
-      <p><strong>Example:</strong> <span id="example"></span></p>
-    </div>
+    <section class="dictionary-container">
+      <!-- Word Result -->
+      <div class="result-box hidden" id="result">
+        <div class="word-header">
+          <h2 id="word"></h2>
+          <span id="phonetic"></span>
+          <button id="play-sound">🔊</button>
+          <button id="save-fav">⭐</button>
+        </div>
+        <div id="meanings"></div>
+      </div>
+
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <div class="favorites">
+          <h3>⭐ Favorites</h3>
+          <ul id="fav-list"></ul>
+        </div>
+        <div class="history">
+          <h3>🕑 Recent Searches</h3>
+          <ul id="history-list"></ul>
+        </div>
+      </aside>
+    </section>
   </main>
 
   <footer>
