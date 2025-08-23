@@ -1,13 +1,35 @@
-* { margin:0; padding:0; box-sizing:border-box; font-family: Arial,sans-serif; }
-body {
-  background: url('assets/background.jpg') no-repeat center center fixed;
-  background-size: cover;
-  color: #fff;
-}
-.app-container { max-width: 900px; margin: auto; padding: 20px; backdrop-filter: blur(6px); background: rgba(0,0,0,0.4); border-radius: 12px; }
-header { display:flex; justify-content: space-between; align-items:center; margin-bottom: 20px; }
-.search-section { display:flex; gap: 10px; margin-bottom: 20px; }
-input { flex:1; padding:10px; border-radius:6px; border:none; }
-button { padding:10px 15px; border:none; border-radius:6px; cursor:pointer; background:#004aad; color:white; }
-.results-section { background: rgba(0,0,0,0.5); padding:20px; border-radius:10px; }
-h2, h3 { margin-bottom: 10px; }
+const searchBtn = document.getElementById('search-btn');
+const wordInput = document.getElementById('word-input');
+const wordTitle = document.getElementById('word-title');
+const wordType = document.getElementById('word-type');
+const definition = document.getElementById('definition');
+const pronunciation = document.getElementById('pronunciation');
+const continentInfo = document.getElementById('continent-info');
+
+searchBtn.addEventListener('click', async () => {
+  const word = wordInput.value.trim();
+  if(!word) return;
+
+  // Fetch word info from API
+  try {
+    const res = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
+    const data = await res.json();
+    if(data[0]){
+      wordTitle.textContent = data[0].word;
+      wordType.textContent = data[0].meanings[0].partOfSpeech;
+      definition.textContent = data[0].meanings[0].definitions[0].definition;
+      if(data[0].phonetics[0]?.audio){
+        pronunciation.src = data[0].phonetics[0].audio;
+      }
+    } else { wordTitle.textContent = 'Word not found'; }
+  } catch(err) { console.error(err); }
+
+  // Example continent info (demo)
+  const continents = {
+    Africa: "Africa is the 2nd largest continent with rich history and diverse cultures.",
+    Europe: "Europe is known for its historical cities and contributions to art, science, and politics.",
+    Asia: "Asia is the largest continent with diverse languages and cultures.",
+    // add more...
+  };
+  continentInfo.textContent = continents[word] || '';
+});
