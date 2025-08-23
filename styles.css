@@ -1,115 +1,96 @@
-/* Reset */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Arial', sans-serif;
+const searchBtn = document.getElementById("search-btn");
+const wordInput = document.getElementById("word-input");
+const resultBox = document.getElementById("result");
+const wordEl = document.getElementById("word");
+const phoneticEl = document.getElementById("phonetic");
+const meaningsEl = document.getElementById("meanings");
+const playBtn = document.getElementById("play-sound");
+const saveFavBtn = document.getElementById("save-fav");
+const favList = document.getElementById("fav-list");
+const historyList = document.getElementById("history-list");
+const themeToggle = document.getElementById("theme-toggle");
+
+let audio;
+let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
+let history = JSON.parse(localStorage.getItem("history")) || [];
+
+function updateSidebar() {
+  favList.innerHTML = favorites.map(w => `<li onclick="searchWord('${w}')">${w}</li>`).join("");
+  historyList.innerHTML = history.map(w => `<li onclick="searchWord('${w}')">${w}</li>`).join("");
 }
 
-body {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  background: url('https://img.freepik.com/free-photo/bookshelf-books-background_53876-148117.jpg') no-repeat center center fixed;
-  background-size: cover;
-  color: #fff;
-  transition: background 0.3s, color 0.3s;
+async function searchWord(word) {
+  if (!word) return;
+  wordInput.value = word;
+
+  const res = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
+  const data = await res.json();
+
+  if (data.title) {
+    alert("Word not found!");
+    return;
+  }
+
+  const info = data[0];
+  wordEl.textContent = info.word;
+  phoneticEl.textContent = info.phonetics[0]?.text || "";
+
+  // Audio
+  if (info.phonetics[0]?.audio) {
+    audio = new Audio(info.phonetics[0].audio);
+    playBtn.style.display = "inline";
+  } else {
+    playBtn.style.display = "none";
+  }
+
+  // Meanings
+  meaningsEl.innerHTML = "";
+  info.meanings.forEach(m => {
+    const div = document.createElement("div");
+    div.classList.add("meaning");
+    div.innerHTML = `
+      <p><strong>${m.partOfSpeech}</strong></p>
+      ${m.definitions.map(d => `<p>• ${d.definition}</p><em>${d.example || ""}</em>`).join("")}
+    `;
+    meaningsEl.appendChild(div);
+  });
+
+  resultBox.classList.remove("hidden");
+
+  // Save history
+  if (!history.includes(word)) {
+    history.unshift(word);
+    if (history.length > 5) history.pop();
+    localStorage.setItem("history", JSON.stringify(history));
+  }
+  updateSidebar();
 }
 
-header {
-  background: rgba(0,0,0,0.7);
-  padding: 15px 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
+// Search event
+searchBtn.addEventListener("click", () => {
+  searchWord(wordInput.value.trim());
+});
 
-header h1 {
-  font-size: 1.5rem;
-}
+// Play pronunciation
+playBtn.addEventListener("click", () => {
+  if (audio) audio.play();
+});
 
-#theme-toggle {
-  background: none;
-  border: none;
-  font-size: 1.3rem;
-  cursor: pointer;
-  color: #fff;
-}
+// Save to favorites
+saveFavBtn.addEventListener("click", () => {
+  const word = wordEl.textContent;
+  if (word && !favorites.includes(word)) {
+    favorites.push(word);
+    localStorage.setItem("favorites", JSON.stringify(favorites));
+    updateSidebar();
+  }
+});
 
-main {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-}
+// Theme toggle
+themeToggle.addEventListener("click", () => {
+  document.body.classList.toggle("light");
+  themeToggle.textContent = document.body.classList.contains("light") ? "🌞" : "🌙";
+});
 
-.search-box {
-  display: flex;
-  gap: 10px;
-}
-
-.search-box input {
-  padding: 10px;
-  font-size: 1rem;
-  border-radius: 8px;
-  border: none;
-  outline: none;
-  width: 250px;
-}
-
-.search-box button {
-  padding: 10px 15px;
-  font-size: 1rem;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  background: #ff9800;
-  color: #fff;
-  transition: 0.3s;
-}
-
-.search-box button:hover {
-  background: #e68900;
-}
-
-.result-box {
-  margin-top: 20px;
-  background: rgba(0,0,0,0.6);
-  padding: 20px;
-  border-radius: 12px;
-  max-width: 500px;
-  text-align: center;
-}
-
-.hidden {
-  display: none;
-}
-
-footer {
-  background: rgba(0,0,0,0.7);
-  text-align: center;
-  padding: 10px;
-  font-size: 0.9rem;
-}
-
-/* Light Mode */
-body.light {
-  background: url('https://img.freepik.com/free-photo/stack-books-library-blurred-background_1232-3102.jpg') no-repeat center center fixed;
-  background-size: cover;
-  color: #000;
-}
-
-body.light header, body.light footer {
-  background: rgba(255,255,255,0.8);
-  color: #000;
-}
-
-body.light #theme-toggle {
-  color: #000;
-}
-
-body.light .result-box {
-  background: rgba(255,255,255,0.7);
-}
+// Load sidebar on start
+updateSidebar();
