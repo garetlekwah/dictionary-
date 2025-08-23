@@ -1,41 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Global Dictionary</title>
-<link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Global Dictionary | LekwahGaret</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<div class="app-container">
+
   <header>
-    <h1>🌍 Global Dictionary</h1>
-    <button id="theme-toggle">🌙</button>
+    <div class="logo">LekwahGaret Dictionary</div>
+    <input type="text" id="searchInput" placeholder="Search for a word..." />
+    <button id="searchBtn">Search</button>
   </header>
 
-  <section class="search-section">
-    <input type="text" id="word-input" placeholder="Type a word or continent/country">
-    <button id="search-btn">🔍 Search</button>
-  </section>
-
-  <section class="results-section">
-    <div id="word-info">
-      <h2 id="word-title"></h2>
-      <p id="word-type"></p>
-      <p id="definition"></p>
-      <audio id="pronunciation" controls></audio>
-    </div>
-    <div id="extra-info">
-      <h3>History / Continent Info</h3>
-      <p id="continent-info"></p>
-    </div>
-  </section>
+  <main>
+    <section id="word-details" class="word-details">
+      <h2 id="wordTitle">Welcome</h2>
+      <p id="definition">Type a word and press Search to see its meaning.</p>
+      <ul id="examples"></ul>
+      <p id="pronunciation"></p>
+      <p id="origin"></p>
+    </section>
+  </main>
 
   <footer>
-    <p>© 2025 LekwahGaret | Powered by Oxford API</p>
+    <p>© 2025 LekwahGaret. All rights reserved. <br> Professional Dictionary App</p>
   </footer>
-</div>
 
-<script src="script.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
