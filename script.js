@@ -1,4 +1,3 @@
-const searchBtn = document.getElementById('searchBtn');
 const searchInput = document.getElementById('searchInput');
 const wordTitle = document.getElementById('wordTitle');
 const definitionEl = document.getElementById('definition');
